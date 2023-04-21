@@ -42,9 +42,9 @@ func (s *SmartContract) Concurrency(ctx contractapi.TransactionContextInterface)
 
 	var wg sync.WaitGroup
 
-	wg.Add(2)
+	wg.Add(1)
 
-	errChan := make(chan error, 2)
+	errChan := make(chan error, 1)
 
 	for i := 0; i < 2; i++ {
 		go func(ctx contractapi.TransactionContextInterface) {
@@ -70,9 +70,15 @@ func (s *SmartContract) Concurrency(ctx contractapi.TransactionContextInterface)
 
 func getState(ctx contractapi.TransactionContextInterface) error {
 
-	_, err := ctx.GetStub().GetState("Check")
+	err := ctx.GetStub().PutState("Check", []byte("Check"))
 	if err != nil {
 		return err
 	}
+
+	_, err = ctx.GetStub().GetState("Check")
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
